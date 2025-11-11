@@ -28,8 +28,8 @@ app.get('/', (req, res) => {
   res.send('Servidor GameTracker Backend Funcionando en localhost!');
 });
 // SERVIDOR LOCAL
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Servidor corriendo en http://localhost:${port}`);
 });
 
 

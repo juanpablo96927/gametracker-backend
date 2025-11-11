@@ -5,12 +5,12 @@ const gameSchema = new mongoose.Schema({
     titulo: { type: String, required: true, trim: true },
     genero: String,
     plataforma: String,
-    añoLanzamiento: Number,
+    anioLanzamiento: Number,
     desarrollador: String,
-    imagenPortada: String,
+    iPortada: String,
     descripcion: String,
     completado: { type: Boolean, default: false },
-    puntuacion: { type: Number, min: 1, max: 5, default: 0 },
+    puntuacion: { type: Number, min: 0, max: 5, default: 0 },
     horasJugadas: { type: Number, default: 0 },
     fechaCreacion: { type: Date, default: Date.now }
 });
