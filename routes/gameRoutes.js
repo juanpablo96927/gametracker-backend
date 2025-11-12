@@ -1,20 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Game = require('../models/Game');
+const Review = require('../models/Review');
+const { getGame } = require('../middlewares/gameMiddleware');
 
-// Middleware corregido
-const getGame = async (req, res, next) => {
-  try {
-    const game = await Game.findById(req.params.id);
-    if (!game) {
-      return res.status(404).json({ message: 'Juego no encontrado' });
-    }
-    res.game = game;
-    next();
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+
 
 // GET todos
 router.get('/', async (req, res) => {
@@ -45,7 +35,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', getGame, async (req, res) => {
   const allowedUpdates = [
     'titulo', 'genero', 'plataforma', 'aniolanzamiento',
-    'desarrollador', 'Portada', 'descripcion', 
+    'desarrollador', 'portada', 'descripcion', 
     'completado', 'puntuacion', 'horasJugadas'
   ];
 
@@ -69,8 +59,16 @@ router.put('/:id', getGame, async (req, res) => {
 // DELETE
 router.delete('/:id', getGame, async (req, res) => {
   try {
+    // 1. Borrar todas las reseñas asociadas al juego
+    // Usamos el ID del juego (res.game._id) para encontrar todas las reseñas y borrarlas.
+    // Esto es CRUCIAL para evitar datos huérfanos.
+    await Review.deleteMany({ game: res.game._id });
+
+    // 2. Borrar el juego
     await res.game.deleteOne();
-    res.json({ message: 'Juego eliminado' });
+    
+    // El mensaje ahora confirma ambos borrados
+    res.json({ message: 'Juego y reseñas asociadas eliminados correctamente.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
