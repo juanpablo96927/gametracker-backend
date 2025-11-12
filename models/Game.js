@@ -36,14 +36,4 @@ gameSchema.virtual('puntuacionMedia').get(function() {
     return this.puntuacion;
 });
 
-//Limpieza de Reseñas al eliminar el juego
-gameSchema.pre('deleteOne', { document: true, query: false }, async function(next) {
-    // Importamos Review aquí para evitar el error de dependencia circular
-    const Review = mongoose.model('Review'); 
-    
-    // Elimina todas las reseñas que tienen el ID del juego
-    await Review.deleteMany({ game: this._id });
-    next();
-});
-
 module.exports = mongoose.model('Game', gameSchema);

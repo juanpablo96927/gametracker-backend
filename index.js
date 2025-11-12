@@ -26,6 +26,7 @@ console.error('Error de conexión:', error);
 process.exit(1);
 }
 };
+conectarDB();
 
 // 2. CONECCION DE RUTAS
 app.use('/api/juegos/:gameId/reviews', reviewRoutes);
@@ -41,4 +42,3 @@ app.listen(port, () => {
 console.log(`Servidor corriendo en http://localhost:${port}`);
 });
 
-conectarDB();

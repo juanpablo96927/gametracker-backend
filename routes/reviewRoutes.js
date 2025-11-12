@@ -6,10 +6,17 @@ const { getGame } = require('../middlewares/gameMiddleware'); // Middleware para
 // POST - Crear reseña
 router.post('/', getGame, async (req, res) => {
   try {
+    // Validación de puntuación
+    if (!req.body.puntuacion || req.body.puntuacion < 1 || req.body.puntuacion > 5) {
+      return res.status(400).json({ 
+        message: 'La puntuación es obligatoria y debe estar entre 1 y 5' 
+      });
+    }
     const review = new Review({
       contenido: req.body.contenido,
       autor: req.body.autor || 'Anónimo',
-      game: res.game._id // Vinculamos al juego
+      game: res.game._id, // Vinculamos al juego
+      puntuacion: req.body.puntuacion
     });
 
     const newReview = await review.save();
