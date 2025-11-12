@@ -59,16 +59,12 @@ router.put('/:id', getGame, async (req, res) => {
 // DELETE
 router.delete('/:id', getGame, async (req, res) => {
   try {
-    // 1. Borrar todas las reseñas asociadas al juego
-    // Usamos el ID del juego (res.game._id) para encontrar todas las reseñas y borrarlas.
-    // Esto es CRUCIAL para evitar datos huérfanos.
-    await Review.deleteMany({ game: res.game._id });
-
+    
     // 2. Borrar el juego
     await res.game.deleteOne();
     
     // El mensaje ahora confirma ambos borrados
-    res.json({ message: 'Juego y reseñas asociadas eliminados correctamente.' });
+    res.json({ message: 'Juego y datos asociados eliminados correctamente.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

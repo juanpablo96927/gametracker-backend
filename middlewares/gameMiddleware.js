@@ -6,13 +6,12 @@ const getGame = async (req, res, next) => {
   const gameId = req.params.id || req.params.gameId;
 
   if (!gameId) {
-    // Esto solo debería ocurrir si el router se usa incorrectamente
+    // Uso incorrecto del Router
     return res.status(400).json({ message: 'Se requiere un ID de juego' });
   }
 
   try {
     // 2. Buscar el juego y cargar las reseñas
-    // Esto es crucial para que los GET, PUT, DELETE y rutas de reseña funcionen
     game = await Game.findById(gameId).populate('reviews');
 
     if (game == null) {
