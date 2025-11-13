@@ -15,7 +15,7 @@ app.use(express.json());
 // IMPORTAR TODAS LAS RUTAS
 const reviewRoutes = require('./routes/reviewRoutes');
 const gameRoutes = require('./routes/gameRoutes');
-
+const userRoutes = require('./routes/userRoutes');
 // Connect to MongoDB Atlas
 const conectarDB = async () => {
 try {
@@ -31,6 +31,7 @@ conectarDB();
 // 2. CONECCION DE RUTAS
 app.use('/api/juegos/:gameId/reviews', reviewRoutes);
 app.use('/api/juegos', gameRoutes);
+app.use('/api/usuarios', userRoutes);
 
 // Rutas de prueba
 app.get('/', (req, res) => {

@@ -4,13 +4,43 @@ const Game = require('../models/Game');
 const Review = require('../models/Review');
 const { getGame } = require('../middlewares/gameMiddleware');
 
-
-
-// GET todos
+// GET ALL/api/juegos
 router.get('/', async (req, res) => {
-  try {
-    const games = await Game.find();
-    res.json(games);
+
+  const query = {};
+  if (req.query.titulo) {
+    query.titulo = { $regex: req.query.titulo, $options: 'i' };
+  }
+  if (req.query.genero) {
+    query.genero = { $regex: req.query.genero, $options: 'i' };
+  }
+  if (req.query.completado) {
+    query.completado = req.query.completado === 'true';
+  }
+
+  // Paginación
+  const limit = parseInt(req.query.limit) || 10;
+  //Elementos maximos a mostrar por solicitud
+  const skip = parseInt(req.query.skip) || 0;
+  //Elemento desde donde se va a comenzar a mostrar los juegos
+
+  try {  //Ejecucion de la consulta
+    const games = await Game.find(query)
+      .limit(limit)
+      .skip(skip)
+      .sort({ fechaCreacion: -1 }) // Ordena por los más recientes primero
+      .exec();
+
+    const totalGames = await Game.countDocuments(query);
+
+    // Devolvemos la respuesta con los juegos y la información de paginación
+    res.json({
+      juegos: games,
+      total: totalGames,
+      limit: limit,
+      skip: skip
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -35,8 +65,8 @@ router.post('/', async (req, res) => {
 router.put('/:id', getGame, async (req, res) => {
   const allowedUpdates = [
     'titulo', 'genero', 'plataforma', 'aniolanzamiento',
-    'desarrollador', 'portada', 'descripcion', 
-    'completado', 'puntuacion', 'horasJugadas'
+    'desarrollador', 'portada', 'descripcion',
+    'completado', 'horasJugadas'
   ];
 
   const updates = Object.keys(req.body);
@@ -59,11 +89,8 @@ router.put('/:id', getGame, async (req, res) => {
 // DELETE
 router.delete('/:id', getGame, async (req, res) => {
   try {
-    
     // 2. Borrar el juego
     await res.game.deleteOne();
-    
-    // El mensaje ahora confirma ambos borrados
     res.json({ message: 'Juego y datos asociados eliminados correctamente.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
