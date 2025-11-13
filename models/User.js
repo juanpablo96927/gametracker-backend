@@ -30,11 +30,10 @@ const userSchema = new mongoose.Schema({
 });
 
 // 2. MIDDLEWARE (Hook) para HASHING de Contraseña
-// Se ejecuta antes de guardar el documento (antes de 'save')
 userSchema.pre('save', async function (next) {
     const user = this;
 
-    // Solo hashear la contraseña si ha sido modificada (o es nueva)
+    // Solo hashear la contraseña si ha sido modificada 
     if (!user.isModified('password')) {
         return next();
     }
@@ -50,7 +49,6 @@ userSchema.pre('save', async function (next) {
 });
 
 // 3. Método para Comparar Contraseñas
-// Este método se usará durante el login para verificar la contraseña
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };

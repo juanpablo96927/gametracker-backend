@@ -3,6 +3,7 @@ const router = express.Router();
 const Game = require('../models/Game');
 const Review = require('../models/Review');
 const { getGame } = require('../middlewares/gameMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 // GET ALL/api/juegos
 router.get('/', async (req, res) => {
@@ -52,9 +53,9 @@ router.get('/:id', getGame, (req, res) => {
 });
 
 // POST
-router.post('/', async (req, res) => {
+router.post('/', protect, async (req, res) => {
   try {
-    const newGame = await Game.create(req.body);
+    const newGame = await Game.create({ ...req.body, user: req.user._id });
     res.status(201).json(newGame);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -62,7 +63,12 @@ router.post('/', async (req, res) => {
 });
 
 // PUT
-router.put('/:id', getGame, async (req, res) => {
+router.put('/:id', protect, getGame, async (req, res) => {
+  // Verificar si el juego pertenece al usuario autenticado
+  if (req.user._id.toString() !== res.game.user.toString()) {
+    return res.status(403).json({ message: 'No tienes permiso para actualizar este juego.' });
+  }
+
   const allowedUpdates = [
     'titulo', 'genero', 'plataforma', 'aniolanzamiento',
     'desarrollador', 'portada', 'descripcion',
@@ -87,8 +93,16 @@ router.put('/:id', getGame, async (req, res) => {
 });
 
 // DELETE
-router.delete('/:id', getGame, async (req, res) => {
+router.delete('/:id', protect, getGame, async (req, res) => {
+  // Verificar si el juego pertenece al usuario autenticado
+  if (req.user._id.toString() !== res.game.user.toString()) {
+    return res.status(403).json({ message: 'No tienes permiso para eliminar este juego.' });
+  }
+
   try {
+    // 1. Eliminar todas las reseñas relacionadas con el juego
+    await Review.deleteMany({ game: res.game._id });
+
     // 2. Borrar el juego
     await res.game.deleteOne();
     res.json({ message: 'Juego y datos asociados eliminados correctamente.' });

@@ -20,13 +20,15 @@ const gameSchema = new mongoose.Schema({
             ref: 'Review' 
         }
     ],
-    fechaCreacion: { 
-        type: Date,
-        default: Date.now 
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 },
-// Inclusion de la puntiacion media en el JSON
+// Inclusion de la puntuacion media en el JSON
 {
+    timestamps: true,
     toJSON: { virtuals: true }, 
     toObject: { virtuals: true }
 });
