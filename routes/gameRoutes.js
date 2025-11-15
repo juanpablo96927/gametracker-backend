@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Game = require('../models/Game');
 const Review = require('../models/Review');
-const { getGame } = require('../middlewares/gameMiddleware');
+const getGame = require('../middlewares/gameMiddleware');
 const { protect } = require('../middlewares/authMiddleware');
 
 // GET ALL/api/juegos

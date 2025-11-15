@@ -1,29 +1,30 @@
 const mongoose = require('mongoose');
 const Game = require('./Game');
-// Define el esquema con la estructura de tu proyecto
+
 const reviewSchema = new mongoose.Schema({
-    // Puntaciones por reseña (1-5 estrellas)
     puntuacion: {
         type: Number,
         required: true,
         min: 1,
         max: 5
     },
-    // Uso del tipo ObjectId para referenciar el juego
     game: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Game'
     },
-    contenido: {
+    // ✅ CORRECCIÓN 1: Cambiado a 'texto' para coincidir con el frontend
+    texto: {
         type: String, 
         required: true, 
         trim: true, 
         maxlength: 500 
     },
+    // ✅ CORRECCIÓN 2: El autor debe ser el ObjectId del usuario logueado
     autor: { 
-        type: String, 
-        default: 'Usuario Anónimo' 
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     },
     fechaCreacion: { 
         type: Date, 
@@ -31,8 +32,7 @@ const reviewSchema = new mongoose.Schema({
     }
 });
 
-// CALCULO DE LA PUNTUACION PROMEDIO - A traves de Moongose Aggregation
-// reviewSchema.js
+// CALCULO DE LA PUNTUACION PROMEDIO (Se mantiene la lógica original)
 reviewSchema.statics.calcularPuntuacionPromedio = async function(gameId) {
     const [stat] = await this.aggregate([
         { $match: { game: gameId } },
